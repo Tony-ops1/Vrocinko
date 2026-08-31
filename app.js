@@ -1,6 +1,7 @@
 (() => {
   const KEY='vrocinko-v3';
   const LAST_USER_KEY='vrocinko-last-user-v2';
+  const ACTIVE_CHILD_KEY='vrocinko-active-child-v1';
   const SUPABASE_URL='https://ndmepipotkkubuuscfnm.supabase.co';
   const SUPABASE_KEY='sb_publishable_CQJYpxpxsIxGtFCdrqdAtA_dlLTYh2a';
   const $=id=>document.getElementById(id);
@@ -12,6 +13,7 @@
   let session=null;
   let cloudChildId=null;
   let cloudIllnessId=null;
+  let cloudChildren=[];
   let syncPromise=null;
 
   function emptyState(){return {childName:'',startedAt:new Date().toISOString(),entries:[],deletedIds:[]};}
@@ -33,7 +35,7 @@
   function save(){localStorage.setItem(KEY,JSON.stringify(state));}
   function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function pad(n){return String(n).padStart(2,'0');}
-  function uuid(){return crypto.randomUUID();}
+  function uuid(){return crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`;}
   function isUuid(v){return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(v||''));}
   function localDateValue(d=new Date()){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
   function localTimeValue(d=new Date()){return `${pad(d.getHours())}:${pad(d.getMinutes())}`;}
@@ -55,17 +57,19 @@
     state.deletedIds=state.deletedIds.filter(isUuid);
     if(changed) save();
   }
+  function activeCloudChild(){return cloudChildren.find(c=>c.id===cloudChildId)||null;}
 
   function showApp(){
     const ok=state.childName.trim().length>0;
     $('setup').classList.toggle('hide',ok);
     $('main').classList.toggle('hide',!ok);
     if(ok){
-      $('editChild').textContent=state.childName;
+      $('editChild').textContent=`${state.childName} ▾`;
       $('illnessDay').textContent=`Dan ${illnessDay()}`;
       renderTimeline();
     }
     renderAccount();
+    renderChildren();
   }
   function openSheet(id){$(id).classList.remove('hide');document.body.style.overflow='hidden';}
   function closeSheet(id){$(id).classList.add('hide');document.body.style.overflow='';}
@@ -140,30 +144,180 @@
     }
   }
 
+  function renderChildren(){
+    const box=$('childList');
+    if(!box) return;
+    if(!session){
+      box.innerHTML=state.childName?`<div class="childChoice active"><span>${esc(state.childName)}</span><span>✓</span></div>`:'<div class="empty">Najprej dodajte otroka.</div>';
+      return;
+    }
+    if(!cloudChildren.length){
+      box.innerHTML='<div class="empty">Ni dodanih otrok.</div>';
+      return;
+    }
+    box.innerHTML=cloudChildren.map(c=>`<button class="childChoice ${c.id===cloudChildId?'active':''}" type="button" data-child-id="${esc(c.id)}"><span>${esc(c.name)}</span><span>${c.id===cloudChildId?'✓':'›'}</span></button>`).join('');
+    box.querySelectorAll('[data-child-id]').forEach(btn=>btn.addEventListener('click',()=>switchChild(btn.dataset.childId)));
+  }
+
+  async function refreshCloudChildren(){
+    if(!session||!db) return [];
+    const result=await db.from('vrocinko_children').select('id,name,created_at').order('created_at',{ascending:true});
+    if(result.error) throw result.error;
+    cloudChildren=result.data||[];
+    renderChildren();
+    return cloudChildren;
+  }
+
+  async function loadChildFromCloud(childId){
+    if(!session||!db) return;
+    let child=cloudChildren.find(c=>c.id===childId);
+    if(!child){
+      const result=await db.from('vrocinko_children').select('id,name,created_at').eq('id',childId).single();
+      if(result.error) throw result.error;
+      child=result.data;
+      cloudChildren.push(child);
+    }
+    cloudChildId=child.id;
+    localStorage.setItem(ACTIVE_CHILD_KEY,child.id);
+
+    let illnessResult=await db.from('vrocinko_illnesses')
+      .select('id,started_at,created_at')
+      .eq('child_id',child.id)
+      .is('ended_at',null)
+      .order('created_at',{ascending:false})
+      .limit(1)
+      .maybeSingle();
+    if(illnessResult.error) throw illnessResult.error;
+    let illness=illnessResult.data;
+    if(!illness){
+      const created=await db.from('vrocinko_illnesses')
+        .insert({user_id:session.user.id,child_id:child.id,started_at:new Date().toISOString()})
+        .select('id,started_at')
+        .single();
+      if(created.error) throw created.error;
+      illness=created.data;
+    }
+    cloudIllnessId=illness.id;
+
+    const entriesResult=await db.from('vrocinko_entries')
+      .select('id,type,title,detail,recorded_at')
+      .eq('illness_id',cloudIllnessId)
+      .order('recorded_at',{ascending:true});
+    if(entriesResult.error) throw entriesResult.error;
+
+    state={
+      childName:child.name,
+      startedAt:illness.started_at||new Date().toISOString(),
+      entries:(entriesResult.data||[]).map(e=>({id:e.id,type:e.type,title:e.title,detail:e.detail||'',at:e.recorded_at})),
+      deletedIds:[]
+    };
+    save();
+    showApp();
+  }
+
+  async function addChild(){
+    if(!session){
+      renderAccount();
+      openSheet('accountSheet');
+      showAuthMessage('Za dodajanje več otrok se najprej prijavite z Googlom.','bad');
+      return;
+    }
+    if(!navigator.onLine){alert('Za dodajanje otroka potrebujete internetno povezavo.');return;}
+    const raw=prompt('Ime novega otroka:','');
+    if(raw===null) return;
+    const name=raw.trim().slice(0,30);
+    if(!name){alert('Vpišite ime otroka.');return;}
+    if(cloudChildren.some(c=>c.name.trim().toLowerCase()===name.toLowerCase())){
+      alert('Otrok s tem imenom je že dodan.');
+      return;
+    }
+    try{
+      if(cloudChildId) await syncCloud().catch(()=>{});
+      const created=await db.from('vrocinko_children')
+        .insert({user_id:session.user.id,name})
+        .select('id,name,created_at')
+        .single();
+      if(created.error) throw created.error;
+      cloudChildren.push(created.data);
+      cloudChildId=created.data.id;
+      localStorage.setItem(ACTIVE_CHILD_KEY,cloudChildId);
+      const illness=await db.from('vrocinko_illnesses')
+        .insert({user_id:session.user.id,child_id:cloudChildId,started_at:new Date().toISOString()})
+        .select('id,started_at')
+        .single();
+      if(illness.error) throw illness.error;
+      cloudIllnessId=illness.data.id;
+      state=emptyState();
+      state.childName=name;
+      state.startedAt=illness.data.started_at;
+      save();showApp();renderChildren();closeSheet('childSheet');
+    }catch(e){
+      console.error('Dodaj otroka:',e);
+      alert('Otroka trenutno ni bilo mogoče dodati. Poskusite znova.');
+    }
+  }
+
+  async function switchChild(childId){
+    if(!session||!childId||childId===cloudChildId){closeSheet('childSheet');return;}
+    if(!navigator.onLine){alert('Za preklop na drugega otroka trenutno potrebujete internetno povezavo.');return;}
+    try{
+      if(cloudChildId) await syncCloud().catch(()=>{});
+      await loadChildFromCloud(childId);
+      closeSheet('childSheet');
+    }catch(e){
+      console.error('Preklop otroka:',e);
+      alert('Podatkov za tega otroka trenutno ni bilo mogoče naložiti.');
+    }
+  }
+
+  async function renameCurrentChild(){
+    const raw=prompt('Ime otroka:',state.childName);
+    if(raw===null) return;
+    const name=raw.trim().slice(0,30);
+    if(!name) return;
+    try{
+      if(session&&cloudChildId){
+        const result=await db.from('vrocinko_children').update({name}).eq('id',cloudChildId);
+        if(result.error) throw result.error;
+        const child=activeCloudChild();
+        if(child) child.name=name;
+      }
+      state.childName=name;
+      save();showApp();renderChildren();
+    }catch(e){
+      alert('Imena trenutno ni bilo mogoče spremeniti.');
+    }
+  }
+
   async function ensureCloudContext(){
     if(!session||!db) return false;
     const userId=session.user.id;
+    if(!cloudChildren.length) await refreshCloudChildren();
 
-    let {data:child,error:childError}=await db.from('vrocinko_children')
-      .select('id,name,created_at')
-      .order('created_at',{ascending:true})
-      .limit(1)
-      .maybeSingle();
-    if(childError) throw childError;
+    let child=activeCloudChild();
+    if(!child&&cloudChildren.length){
+      const stored=localStorage.getItem(ACTIVE_CHILD_KEY);
+      child=cloudChildren.find(c=>c.id===stored)
+        ||cloudChildren.find(c=>c.name.trim().toLowerCase()===state.childName.trim().toLowerCase())
+        ||cloudChildren[0];
+      cloudChildId=child.id;
+      localStorage.setItem(ACTIVE_CHILD_KEY,child.id);
+    }
 
     if(!child){
       if(!state.childName.trim()) return false;
       const created=await db.from('vrocinko_children')
         .insert({user_id:userId,name:state.childName.trim()})
-        .select('id,name')
+        .select('id,name,created_at')
         .single();
       if(created.error) throw created.error;
       child=created.data;
-    }else{
-      if(!state.childName.trim()) state.childName=child.name;
-      else if(state.entries.length===0) state.childName=child.name;
+      cloudChildren=[child];
+      cloudChildId=child.id;
+      localStorage.setItem(ACTIVE_CHILD_KEY,child.id);
     }
-    cloudChildId=child.id;
+
+    if(!state.childName.trim()) state.childName=child.name;
 
     let {data:illness,error:illnessError}=await db.from('vrocinko_illnesses')
       .select('id,started_at,created_at')
@@ -205,6 +359,8 @@
     if(state.childName.trim()){
       const renamed=await db.from('vrocinko_children').update({name:state.childName.trim()}).eq('id',cloudChildId);
       if(renamed.error) throw renamed.error;
+      const child=activeCloudChild();
+      if(child) child.name=state.childName.trim();
     }
 
     const illnessUpdate=await db.from('vrocinko_illnesses').update({started_at:state.startedAt}).eq('id',cloudIllnessId);
@@ -257,22 +413,37 @@
 
   async function handleSignedIn(nextSession){
     session=nextSession;
-    cloudChildId=null;cloudIllnessId=null;
+    cloudChildId=null;cloudIllnessId=null;cloudChildren=[];
     const currentUser=session.user.id;
     const lastUser=localStorage.getItem(LAST_USER_KEY);
     if(lastUser&&lastUser!==currentUser){
       state=emptyState();
+      localStorage.removeItem(ACTIVE_CHILD_KEY);
       save();
     }
     localStorage.setItem(LAST_USER_KEY,currentUser);
     renderAccount();showApp();
     try{
-      await syncCloud();
+      await refreshCloudChildren();
+      if(!cloudChildren.length){
+        if(state.childName.trim()) await syncCloud();
+      }else{
+        const stored=localStorage.getItem(ACTIVE_CHILD_KEY);
+        const matching=state.childName.trim()?cloudChildren.find(c=>c.name.trim().toLowerCase()===state.childName.trim().toLowerCase()):null;
+        const chosen=matching||cloudChildren.find(c=>c.id===stored)||cloudChildren[0];
+        cloudChildId=chosen.id;
+        localStorage.setItem(ACTIVE_CHILD_KEY,chosen.id);
+        if(matching) await syncCloud();
+        else await loadChildFromCloud(chosen.id);
+      }
+      renderChildren();
       closeSheet('accountSheet');
-    }catch(e){}
+    }catch(e){
+      console.error('Prijava/sinhronizacija:',e);
+    }
   }
   function handleSignedOut(){
-    session=null;cloudChildId=null;cloudIllnessId=null;
+    session=null;cloudChildId=null;cloudIllnessId=null;cloudChildren=[];
     renderAccount();showApp();
   }
 
@@ -306,24 +477,42 @@
       $('sendLoginBtn').disabled=false;
     }
   }
-  async function verifyCode(){
-    const email=$('authEmail').value.trim().toLowerCase();
-    const token=$('authCode').value.trim().replace(/\s/g,'');
-    if(!email||!token){showAuthMessage('Vpišite e-pošto in kodo iz sporočila.','bad');return;}
-    $('verifyCodeBtn').disabled=true;
-    try{
-      const result=await db.auth.verifyOtp({email,token,type:'email'});
-      if(result.error) throw result.error;
-      showAuthMessage('Prijava je uspela.','good');
-    }catch(e){
-      showAuthMessage('Koda ni veljavna ali je potekla.','bad');
-    }finally{$('verifyCodeBtn').disabled=false;}
-  }
+  async function verifyCode(){}
   function showAuthMessage(text,kind=''){
     const el=$('authMessage');
     el.textContent=text;el.className='authMessage';
     if(kind) el.classList.add(kind);
   }
+
+
+  function ensureChildUi(){
+    if(!document.getElementById('childUiStyle')){
+      const style=document.createElement('style');
+      style.id='childUiStyle';
+      style.textContent='.addChildBtn{border:1px solid #dbeafe;background:#fff;color:#2563eb;box-shadow:var(--shadow);border-radius:999px;padding:10px 12px;font-weight:800;white-space:nowrap}.childList{display:grid;gap:9px;margin:12px 0}.childChoice{width:100%;min-height:56px;border:1px solid var(--line);border-radius:17px;background:#fff;color:var(--text);padding:12px 15px;font-weight:800;display:flex;align-items:center;justify-content:space-between;text-align:left}.childChoice.active{border-color:#93c5fd;background:var(--blue-soft);color:#1d4ed8}@media(max-width:430px){.addChildBtn{padding:9px 10px;font-size:13px}.topActions{flex-wrap:wrap;justify-content:flex-end}}';
+      document.head.appendChild(style);
+    }
+    const top=document.querySelector('.topActions');
+    if(top&&!$('addChildBtn')){
+      const btn=document.createElement('button');
+      btn.id='addChildBtn';
+      btn.className='addChildBtn';
+      btn.type='button';
+      btn.textContent='＋ Dodaj otroka';
+      top.insertBefore(btn,$('editChild'));
+    }
+    if(!$('childSheet')){
+      const back=document.createElement('div');
+      back.id='childSheet';
+      back.className='sheetBack hide';
+      back.setAttribute('role','dialog');
+      back.setAttribute('aria-modal','true');
+      back.innerHTML='<div class="sheet"><div class="grab"></div><div class="sheetHead"><h2>👧👦 Otroci</h2><button class="close" data-close="childSheet" type="button">×</button></div><div class="sub">Izberite otroka. Vsak otrok ima svoj ločen potek bolezni in svoje zapise.</div><div id="childList" class="childList"></div><button id="childAddBtn" class="primary" type="button">＋ Dodaj otroka</button><button id="renameChildBtn" class="secondary wide" type="button">Preimenuj izbranega otroka</button><div class="freeBadge">TESTNA RAZLIČICA · VSE FUNKCIJE BREZPLAČNE</div></div>';
+      document.body.appendChild(back);
+    }
+  }
+
+  ensureChildUi();
 
   $('startBtn').addEventListener('click',()=>{
     const n=$('childNameInput').value.trim();
@@ -334,14 +523,17 @@
     if(session) syncCloud().catch(()=>{});
   });
 
-  $('editChild').addEventListener('click',()=>{
-    const n=prompt('Ime otroka:',state.childName);
-    if(n!==null&&n.trim()){
-      state.childName=n.trim().slice(0,30);
-      save();showApp();
-      if(session) syncCloud().catch(()=>{});
+  $('editChild').addEventListener('click',async()=>{
+    if(session){
+      try{await refreshCloudChildren();}catch(e){}
+      renderChildren();openSheet('childSheet');
+    }else{
+      renameCurrentChild();
     }
   });
+  $('addChildBtn').addEventListener('click',addChild);
+  $('childAddBtn').addEventListener('click',addChild);
+  $('renameChildBtn').addEventListener('click',renameCurrentChild);
 
   $('openTemp').addEventListener('click',()=>{
     $('tempInput').value='';$('tempMedName').value='';$('tempError').textContent='';
