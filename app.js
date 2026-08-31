@@ -3,6 +3,7 @@
   const $=id=>document.getElementById(id);
   let state=load();
   let selectedSymptoms=new Set();
+  let tempSelectedSymptoms=new Set();
 
   function load(){
     try{
@@ -15,7 +16,7 @@
     return {childName:'',startedAt:new Date().toISOString(),entries:[]};
   }
   function save(){localStorage.setItem(KEY,JSON.stringify(state));}
-  function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));}
+  function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   function pad(n){return String(n).padStart(2,'0');}
   function localDateValue(d=new Date()){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
   function localTimeValue(d=new Date()){return `${pad(d.getHours())}:${pad(d.getMinutes())}`;}
@@ -71,6 +72,8 @@
     $('tempInput').value='';
     $('tempMedName').value='';
     $('tempError').textContent='';
+    tempSelectedSymptoms.clear();
+    document.querySelectorAll('#tempSymptomGrid .symptom').forEach(b=>b.classList.remove('selected'));
     const now=new Date();
     $('tempDate').value=localDateValue(now);
     $('tempTime').value=localTimeValue(now);
@@ -78,6 +81,13 @@
     openSheet('tempSheet');
     setTimeout(()=>$('tempInput').focus(),120);
   });
+
+  document.querySelectorAll('#tempSymptomGrid .symptom').forEach(btn=>btn.addEventListener('click',()=>{
+    const s=btn.dataset.tempSymptom;
+    tempSelectedSymptoms.has(s)?tempSelectedSymptoms.delete(s):tempSelectedSymptoms.add(s);
+    btn.classList.toggle('selected',tempSelectedSymptoms.has(s));
+  }));
+
   $('saveTemp').addEventListener('click',()=>{
     const value=Number($('tempInput').value.trim().replace(',','.'));
     if(!Number.isFinite(value)||value<34||value>43){$('tempError').textContent='Vpišite temperaturo med 34,0 in 43,0 °C.';return;}
@@ -88,9 +98,14 @@
     if(chosen.getTime()>Date.now()+300000){$('tempError').textContent='Datum in čas ne moreta biti v prihodnosti.';return;}
     if(chosen<new Date(state.startedAt)) state.startedAt=chosen.toISOString();
 
-    pushEntry('temp',`${value.toFixed(1).replace('.',',')} °C`,'Izmerjena temperatura',chosen.toISOString());
+    const at=chosen.toISOString();
+    pushEntry('temp',`${value.toFixed(1).replace('.',',')} °C`,'Izmerjena temperatura',at);
+
     const med=$('tempMedName').value.trim();
-    if(med) pushEntry('med',med,'',chosen.toISOString());
+    if(med) pushEntry('med',med,'',at);
+
+    const symptoms=[...tempSelectedSymptoms];
+    if(symptoms.length) pushEntry('sym',symptoms.join(', '),'',at);
 
     save();
     renderTimeline();
@@ -101,8 +116,8 @@
   $('openMed').addEventListener('click',()=>{$('medName').value='';$('medError').textContent='';openSheet('medSheet');setTimeout(()=>$('medName').focus(),120);});
   $('saveMed').addEventListener('click',()=>{const n=$('medName').value.trim();if(!n){$('medError').textContent='Vpišite ime zdravila.';return;}addEntry('med',n,'');closeSheet('medSheet');});
 
-  $('openSym').addEventListener('click',()=>{selectedSymptoms.clear();$('symNote').value='';$('symError').textContent='';document.querySelectorAll('.symptom').forEach(b=>b.classList.remove('selected'));openSheet('symSheet');});
-  document.querySelectorAll('.symptom').forEach(btn=>btn.addEventListener('click',()=>{const s=btn.dataset.symptom;selectedSymptoms.has(s)?selectedSymptoms.delete(s):selectedSymptoms.add(s);btn.classList.toggle('selected',selectedSymptoms.has(s));}));
+  $('openSym').addEventListener('click',()=>{selectedSymptoms.clear();$('symNote').value='';$('symError').textContent='';document.querySelectorAll('#symptomGrid .symptom').forEach(b=>b.classList.remove('selected'));openSheet('symSheet');});
+  document.querySelectorAll('#symptomGrid .symptom').forEach(btn=>btn.addEventListener('click',()=>{const s=btn.dataset.symptom;selectedSymptoms.has(s)?selectedSymptoms.delete(s):selectedSymptoms.add(s);btn.classList.toggle('selected',selectedSymptoms.has(s));}));
   $('saveSym').addEventListener('click',()=>{const note=$('symNote').value.trim();if(!selectedSymptoms.size&&!note){$('symError').textContent='Izberite vsaj en simptom ali napišite kratko opombo.';return;}const arr=[...selectedSymptoms];addEntry('sym',arr.length?arr.join(', '):'Opomba',note||'Trenutno opaženi simptomi');closeSheet('symSheet');});
 
   $('doctorBtn').addEventListener('click',()=>{$('reportText').value=buildReport();$('reportMsg').textContent='';openSheet('reportSheet');});
