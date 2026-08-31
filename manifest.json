@@ -1,0 +1,19 @@
+{
+  "name": "Vročinko",
+  "short_name": "Vročinko",
+  "description": "Preprost dnevnik temperature, simptomov in zdravil pri otroku.",
+  "lang": "sl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#f8fafc",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
