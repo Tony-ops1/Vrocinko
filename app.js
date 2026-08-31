@@ -1,8 +1,8 @@
 (() => {
   const KEY='vrocinko-v3';
-  const LAST_USER_KEY='vrocinko-last-user-v1';
-  const SUPABASE_URL='https://ceudducaxmwcwscguzle.supabase.co';
-  const SUPABASE_KEY='sb_publishable_1_22EsQWMl5_OI2XmNhjRg_xdloiS8g';
+  const LAST_USER_KEY='vrocinko-last-user-v2';
+  const SUPABASE_URL='https://ndmepipotkkubuuscfnm.supabase.co';
+  const SUPABASE_KEY='sb_publishable_CQJYpxpxsIxGtFCdrqdAtA_dlLTYh2a';
   const $=id=>document.getElementById(id);
   const db=window.supabase?.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 
