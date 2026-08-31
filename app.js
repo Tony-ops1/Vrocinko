@@ -15,7 +15,7 @@
     return {childName:'',startedAt:new Date().toISOString(),entries:[]};
   }
   function save(){localStorage.setItem(KEY,JSON.stringify(state));}
-  function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));}
   function pad(n){return String(n).padStart(2,'0');}
   function localDateValue(d=new Date()){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
   function localTimeValue(d=new Date()){return `${pad(d.getHours())}:${pad(d.getMinutes())}`;}
@@ -35,8 +35,11 @@
   }
   function openSheet(id){$(id).classList.remove('hide');document.body.style.overflow='hidden';}
   function closeSheet(id){$(id).classList.add('hide');document.body.style.overflow='';}
-  function addEntry(type,title,detail='',at=null){
+  function pushEntry(type,title,detail='',at=null){
     state.entries.push({id:(crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`),type,title,detail,at:at||new Date().toISOString()});
+  }
+  function addEntry(type,title,detail='',at=null){
+    pushEntry(type,title,detail,at);
     save();renderTimeline();showApp();
   }
   function renderTimeline(){
@@ -65,9 +68,15 @@
   $('editChild').addEventListener('click',()=>{const n=prompt('Ime otroka:',state.childName);if(n!==null&&n.trim()){state.childName=n.trim().slice(0,30);save();showApp();}});
 
   $('openTemp').addEventListener('click',()=>{
-    $('tempInput').value='';$('tempError').textContent='';
-    const now=new Date();$('tempDate').value=localDateValue(now);$('tempTime').value=localTimeValue(now);$('tempDate').max=localDateValue(now);
-    openSheet('tempSheet');setTimeout(()=>$('tempInput').focus(),120);
+    $('tempInput').value='';
+    $('tempMedName').value='';
+    $('tempError').textContent='';
+    const now=new Date();
+    $('tempDate').value=localDateValue(now);
+    $('tempTime').value=localTimeValue(now);
+    $('tempDate').max=localDateValue(now);
+    openSheet('tempSheet');
+    setTimeout(()=>$('tempInput').focus(),120);
   });
   $('saveTemp').addEventListener('click',()=>{
     const value=Number($('tempInput').value.trim().replace(',','.'));
@@ -78,7 +87,14 @@
     if(Number.isNaN(chosen.getTime())){$('tempError').textContent='Datum ali čas ni veljaven.';return;}
     if(chosen.getTime()>Date.now()+300000){$('tempError').textContent='Datum in čas ne moreta biti v prihodnosti.';return;}
     if(chosen<new Date(state.startedAt)) state.startedAt=chosen.toISOString();
-    addEntry('temp',`${value.toFixed(1).replace('.',',')} °C`,'Izmerjena temperatura',chosen.toISOString());
+
+    pushEntry('temp',`${value.toFixed(1).replace('.',',')} °C`,'Izmerjena temperatura',chosen.toISOString());
+    const med=$('tempMedName').value.trim();
+    if(med) pushEntry('med',med,'',chosen.toISOString());
+
+    save();
+    renderTimeline();
+    showApp();
     closeSheet('tempSheet');
   });
 
