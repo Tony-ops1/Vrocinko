@@ -17,19 +17,25 @@
     <section id="setup" class="setup hide">
       <div style="font-size:42px;margin-bottom:10px">🌡️</div>
       <h1>Dobrodošli v Vročinko</h1>
-      <div class="sub">Najprej vpišite samo ime otroka. Potem samo pritiskate, kaj želite zabeležiti.</div>
+      <div class="sub">Vpišite ime otroka ali se prijavite, če že imate podatke shranjene v Vročinko računu.</div>
       <label class="label" for="childNameInput">Kako je otroku ime?</label>
       <input id="childNameInput" class="input" maxlength="30" autocomplete="off" placeholder="npr. Nik">
       <button id="startBtn" class="primary" type="button">Začni spremljanje</button>
+      <button id="setupAccountBtn" class="secondary wide" type="button">☁️ Prijava / moj račun</button>
       <div id="setupError" class="error"></div>
+      <div class="freeBadge">TESTNA RAZLIČICA · VSE FUNKCIJE BREZPLAČNE</div>
     </section>
 
     <main id="main" class="hide">
       <div class="top">
         <div class="brand">Vročinko</div>
-        <button id="editChild" class="child" type="button">Otrok</button>
+        <div class="topActions">
+          <button id="accountBtn" class="accountBtn" type="button">☁️ Račun</button>
+          <button id="editChild" class="child" type="button">Otrok</button>
+        </div>
       </div>
 
+      <div id="cloudBanner" class="cloudBanner hide"></div>
       <div class="hello">Prehlad, gripa in podobna sezonska obolenja</div>
       <h1>Kako je zdaj?</h1>
       <div class="sub">Pritisnite samo tisto, kar želite zabeležiti.</div>
@@ -77,10 +83,10 @@
           <input id="tempTime" class="input" type="time">
         </div>
       </div>
-      <label class="label" for="tempMedName">💊 Zdravilo ob vročini <span style="font-weight:500;color:var(--muted)">(neobvezno)</span></label>
+      <label class="label" for="tempMedName">💊 Zdravilo ob vročini <span class="optional">(neobvezno)</span></label>
       <input id="tempMedName" class="input" autocomplete="off" placeholder="npr. Calpol">
 
-      <label class="label">🤧 Simptomi ob tej meritvi <span style="font-weight:500;color:var(--muted)">(neobvezno)</span></label>
+      <label class="label">🤧 Simptomi ob tej meritvi <span class="optional">(neobvezno)</span></label>
       <div id="tempSymptomGrid" class="symptoms">
         <button class="symptom" type="button" data-temp-symptom="Kašelj">Kašelj</button>
         <button class="symptom" type="button" data-temp-symptom="Zamašen nos">Zamašen nos</button>
@@ -145,10 +151,41 @@
         <button id="copyReport" class="secondary" type="button">Kopiraj</button>
         <button id="shareReport" class="share" type="button">Deli</button>
       </div>
-      <div id="reportMsg" class="error" style="color:var(--green)"></div>
+      <div id="reportMsg" class="error success"></div>
     </div>
   </div>
 
+  <div id="accountSheet" class="sheetBack hide" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+    <div class="sheet">
+      <div class="grab"></div>
+      <div class="sheetHead"><h2 id="accountTitle">☁️ Vročinko račun</h2><button class="close" data-close="accountSheet" type="button">×</button></div>
+
+      <div id="signedOutBox">
+        <div class="sub">Prijavite se z e-pošto. Vaši zapisi se bodo nato samodejno shranjevali v oblak in bodo dostopni tudi na drugem telefonu.</div>
+        <label class="label" for="authEmail">E-pošta</label>
+        <input id="authEmail" class="input" type="email" inputmode="email" autocomplete="email" placeholder="ime@primer.si">
+        <button id="sendLoginBtn" class="primary" type="button">Pošlji prijavno povezavo</button>
+        <div class="authDivider"><span>ali koda iz e-pošte</span></div>
+        <input id="authCode" class="input codeInput" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="6-mestna koda">
+        <button id="verifyCodeBtn" class="secondary wide" type="button">Potrdi kodo</button>
+        <div id="authMessage" class="authMessage"></div>
+      </div>
+
+      <div id="signedInBox" class="hide">
+        <div class="accountCard">
+          <div class="accountIcon">✓</div>
+          <div><strong>Prijavljeni ste</strong><div id="accountEmail" class="mutedSmall"></div></div>
+        </div>
+        <div id="syncStatus" class="syncStatus">☁️ Sinhronizacija …</div>
+        <button id="syncNowBtn" class="primary" type="button">Sinhroniziraj zdaj</button>
+        <button id="signOutBtn" class="secondary wide dangerText" type="button">Odjava</button>
+      </div>
+
+      <div class="freeBadge">TESTNA RAZLIČICA · VSE FUNKCIJE BREZPLAČNE</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
 </body>
 </html>
