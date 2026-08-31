@@ -302,12 +302,12 @@
       const redirectTo=`${location.origin}${location.pathname}`;
       const result=await db.auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:redirectTo}});
       if(result.error) throw result.error;
-      showAuthMessage('E-pošta je poslana. Odprite sporočilo in pritisnite prijavno povezavo. Če prejmete 6-mestno kodo, jo vpišite spodaj.','good');
+      showAuthMessage('Poslali smo vam e-pošto. Odprite jo in pritisnite povezavo v sporočilu. Po potrditvi se boste vrnili v Vročinko.','good');
     }catch(e){
       showAuthMessage('Prijavne e-pošte trenutno ni bilo mogoče poslati. Poskusite znova.','bad');
     }finally{
       $('sendLoginBtn').disabled=false;
-      $('sendLoginBtn').textContent='Pošlji prijavno povezavo';
+      $('sendLoginBtn').textContent='Pošlji povezavo na e-pošto';
     }
   }
   async function verifyCode(){
