@@ -37,7 +37,7 @@
       <div class="actions">
         <button class="action temp" id="openTemp" type="button">
           <span class="emoji">🌡️</span>
-          <span><strong>Temperatura</strong><small>Vpiši temperaturo, datum in čas</small></span>
+          <span><strong>Temperatura</strong><small>Vpiši temperaturo, čas in po potrebi zdravilo</small></span>
         </button>
         <button class="action med" id="openMed" type="button">
           <span class="emoji">💊</span>
@@ -77,8 +77,10 @@
           <input id="tempTime" class="input" type="time">
         </div>
       </div>
+      <label class="label" for="tempMedName">💊 Zdravilo ob vročini <span style="font-weight:500;color:var(--muted)">(neobvezno)</span></label>
+      <input id="tempMedName" class="input" autocomplete="off" placeholder="npr. Calpol">
       <div id="tempError" class="error"></div>
-      <button id="saveTemp" class="save" type="button">Shrani temperaturo</button>
+      <button id="saveTemp" class="save" type="button">Shrani</button>
     </div>
   </div>
 
