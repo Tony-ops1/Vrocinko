@@ -1,4 +1,4 @@
-const CACHE='vrocinko-v10';
+const CACHE='vrocinko-v11';
 const FILES=['./','./index.html','./style.css','./app.js','./manifest.json','./icon.svg'];
 
 self.addEventListener('install',event=>{
