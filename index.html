@@ -37,7 +37,7 @@
       <div class="actions">
         <button class="action temp" id="openTemp" type="button">
           <span class="emoji">🌡️</span>
-          <span><strong>Temperatura</strong><small>Vpiši temperaturo, čas in po potrebi zdravilo</small></span>
+          <span><strong>Temperatura</strong><small>Temperatura, čas, zdravilo in simptomi</small></span>
         </button>
         <button class="action med" id="openMed" type="button">
           <span class="emoji">💊</span>
@@ -79,8 +79,23 @@
       </div>
       <label class="label" for="tempMedName">💊 Zdravilo ob vročini <span style="font-weight:500;color:var(--muted)">(neobvezno)</span></label>
       <input id="tempMedName" class="input" autocomplete="off" placeholder="npr. Calpol">
+
+      <label class="label">🤧 Simptomi ob tej meritvi <span style="font-weight:500;color:var(--muted)">(neobvezno)</span></label>
+      <div id="tempSymptomGrid" class="symptoms">
+        <button class="symptom" type="button" data-temp-symptom="Kašelj">Kašelj</button>
+        <button class="symptom" type="button" data-temp-symptom="Zamašen nos">Zamašen nos</button>
+        <button class="symptom" type="button" data-temp-symptom="Izcedek iz nosu">Izcedek iz nosu</button>
+        <button class="symptom" type="button" data-temp-symptom="Boleče grlo">Boleče grlo</button>
+        <button class="symptom" type="button" data-temp-symptom="Glavobol">Glavobol</button>
+        <button class="symptom" type="button" data-temp-symptom="Utrujenost">Utrujenost</button>
+        <button class="symptom" type="button" data-temp-symptom="Mrzlica">Mrzlica</button>
+        <button class="symptom" type="button" data-temp-symptom="Bolečine v mišicah">Bolečine v mišicah</button>
+        <button class="symptom" type="button" data-temp-symptom="Bruhanje">Bruhanje</button>
+        <button class="symptom" type="button" data-temp-symptom="Driska">Driska</button>
+      </div>
+
       <div id="tempError" class="error"></div>
-      <button id="saveTemp" class="save" type="button">Shrani</button>
+      <button id="saveTemp" class="save" type="button">Shrani vse</button>
     </div>
   </div>
 
