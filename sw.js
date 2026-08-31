@@ -1,5 +1,5 @@
-const CACHE='vrocinko-v1';
-const FILES=['./','./index.html','./manifest.json','./icon.svg'];
+const CACHE='vrocinko-v2';
+const FILES=['./','./index.html','./style.css','./app.js','./manifest.json','./icon.svg'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)));
