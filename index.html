@@ -161,13 +161,13 @@
       <div class="sheetHead"><h2 id="accountTitle">☁️ Vročinko račun</h2><button class="close" data-close="accountSheet" type="button">×</button></div>
 
       <div id="signedOutBox">
-        <div class="sub">Prijavite se z e-pošto. Vaši zapisi se bodo nato samodejno shranjevali v oblak in bodo dostopni tudi na drugem telefonu.</div>
+        <div class="sub">Vpišite svojo e-pošto. Poslali vam bomo prijavno povezavo. Odprite e-pošto in pritisnite povezavo — brez gesla in brez kode.</div>
         <label class="label" for="authEmail">E-pošta</label>
         <input id="authEmail" class="input" type="email" inputmode="email" autocomplete="email" placeholder="ime@primer.si">
-        <button id="sendLoginBtn" class="primary" type="button">Pošlji prijavno povezavo</button>
-        <div class="authDivider"><span>ali koda iz e-pošte</span></div>
-        <input id="authCode" class="input codeInput" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="6-mestna koda">
-        <button id="verifyCodeBtn" class="secondary wide" type="button">Potrdi kodo</button>
+        <button id="sendLoginBtn" class="primary" type="button">Pošlji povezavo na e-pošto</button>
+        <div class="authDivider hide"><span>ali koda iz e-pošte</span></div>
+        <input id="authCode" class="input codeInput hide" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="6-mestna koda">
+        <button id="verifyCodeBtn" class="secondary wide hide" type="button">Potrdi kodo</button>
         <div id="authMessage" class="authMessage"></div>
       </div>
 
