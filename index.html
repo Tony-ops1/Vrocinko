@@ -9,94 +9,15 @@
   <meta name="apple-mobile-web-app-title" content="Vročinko">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
   <title>Vročinko</title>
-  <style>
-    :root{
-      --bg:#f8fafc;
-      --card:#ffffff;
-      --text:#172033;
-      --muted:#667085;
-      --line:#e5e7eb;
-      --accent:#e5484d;
-      --accent-soft:#fff0f0;
-      --blue:#2563eb;
-      --blue-soft:#eff6ff;
-      --green:#15803d;
-      --green-soft:#f0fdf4;
-      --orange:#c2410c;
-      --orange-soft:#fff7ed;
-      --shadow:0 8px 28px rgba(15,23,42,.07);
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    button,input,textarea{font:inherit}
-    button{cursor:pointer}
-    .app{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 30px)}
-    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
-    .brand{font-size:28px;font-weight:850;letter-spacing:-.04em}
-    .child{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:10px 14px;font-weight:750;color:var(--text)}
-    .hello{margin:6px 0 4px;font-size:13px;color:var(--muted)}
-    h1{font-size:34px;line-height:1.08;letter-spacing:-.04em;margin:0 0 8px}
-    .sub{font-size:16px;line-height:1.45;color:var(--muted);margin-bottom:20px}
-    .setup{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:22px;box-shadow:var(--shadow);margin-top:28px}
-    .setup h1{font-size:30px}
-    .label{display:block;font-size:14px;font-weight:750;margin:18px 0 8px}
-    .input{width:100%;min-height:54px;border:1px solid #d0d5dd;background:#fff;border-radius:16px;padding:14px 16px;font-size:18px;outline:none}
-    .input:focus{border-color:#98a2b3;box-shadow:0 0 0 3px rgba(152,162,179,.15)}
-    .primary{width:100%;min-height:56px;border:0;border-radius:17px;background:var(--text);color:#fff;font-weight:800;font-size:17px;margin-top:14px}
-    .actions{display:grid;gap:12px;margin:20px 0 26px}
-    .action{width:100%;min-height:92px;border:1px solid var(--line);border-radius:24px;background:var(--card);box-shadow:var(--shadow);padding:16px 18px;display:flex;align-items:center;gap:16px;text-align:left;color:var(--text)}
-    .action .emoji{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;font-size:30px;flex:none}
-    .action strong{display:block;font-size:21px;letter-spacing:-.02em;margin-bottom:3px}
-    .action small{display:block;color:var(--muted);font-size:14px}
-    .temp .emoji{background:var(--accent-soft)}
-    .med .emoji{background:var(--blue-soft)}
-    .sym .emoji{background:var(--green-soft)}
-    .sectionTitle{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 10px}
-    .sectionTitle h2{font-size:20px;margin:0;letter-spacing:-.02em}
-    .day{font-size:13px;color:var(--muted)}
-    .empty{border:1px dashed #cbd5e1;border-radius:20px;padding:22px;text-align:center;color:var(--muted);background:rgba(255,255,255,.6)}
-    .timeline{display:grid;gap:9px}
-    .event{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px 15px;display:grid;grid-template-columns:44px 1fr auto;gap:11px;align-items:start}
-    .eventIcon{width:44px;height:44px;border-radius:14px;background:#f3f4f6;display:grid;place-items:center;font-size:22px}
-    .eventTitle{font-weight:800;font-size:16px;line-height:1.25}
-    .eventMeta{color:var(--muted);font-size:13px;margin-top:4px;line-height:1.35}
-    .delete{border:0;background:transparent;color:#98a2b3;padding:8px;font-size:18px;line-height:1}
-    .doctor{width:100%;min-height:58px;border:0;border-radius:18px;background:var(--text);color:#fff;font-weight:800;font-size:17px;margin:22px 0 10px}
-    .newIllness{width:100%;min-height:50px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--muted);font-weight:700}
-    .note{font-size:12px;line-height:1.45;color:#98a2b3;text-align:center;margin:16px 14px 0}
-    .hide{display:none!important}
-    .sheetBack{position:fixed;inset:0;background:rgba(15,23,42,.34);display:flex;align-items:flex-end;justify-content:center;z-index:20;padding-top:40px}
-    .sheet{width:min(560px,100%);max-height:88%;overflow:auto;background:var(--bg);border-radius:28px 28px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 18px);box-shadow:0 -10px 40px rgba(15,23,42,.16)}
-    .grab{width:44px;height:5px;border-radius:999px;background:#d0d5dd;margin:0 auto 16px}
-    .sheetHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
-    .sheetHead h2{font-size:25px;letter-spacing:-.03em;margin:0}
-    .close{width:42px;height:42px;border:0;border-radius:50%;background:#e5e7eb;color:var(--text);font-size:20px}
-    .bigTemp{display:flex;align-items:center;gap:8px;margin:14px 0 2px}
-    .bigTemp input{min-width:0;flex:1;height:72px;border:1px solid #d0d5dd;border-radius:20px;background:#fff;padding:10px 16px;font-size:38px;font-weight:850;text-align:center;outline:none}
-    .degree{font-size:25px;font-weight:800}
-    .save{width:100%;min-height:58px;border:0;border-radius:18px;background:var(--accent);color:#fff;font-weight:850;font-size:18px;margin-top:16px}
-    .save.blue{background:var(--blue)}
-    .save.green{background:var(--green)}
-    .error{min-height:20px;color:#b42318;font-size:13px;margin-top:8px}
-    .symptoms{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
-    .symptom{min-height:54px;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--text);font-weight:700;padding:10px}
-    .symptom.selected{border-color:#86efac;background:var(--green-soft);color:#166534}
-    .report{width:100%;min-height:260px;border:1px solid var(--line);border-radius:18px;background:#fff;padding:14px;font-size:15px;line-height:1.55;resize:none;color:var(--text)}
-    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .secondary{min-height:54px;border:1px solid var(--line);border-radius:17px;background:#fff;color:var(--text);font-weight:800}
-    .share{min-height:54px;border:0;border-radius:17px;background:var(--text);color:#fff;font-weight:800}
-    @media(max-width:360px){
-      .brand{font-size:25px}.child{padding:9px 11px}.action strong{font-size:19px}.symptoms{grid-template-columns:1fr}
-    }
-  </style>
 </head>
 <body>
   <div class="app">
     <section id="setup" class="setup hide">
       <div style="font-size:42px;margin-bottom:10px">🌡️</div>
       <h1>Dobrodošli v Vročinko</h1>
-      <div class="sub">Najprej vpišite samo ime otroka. Vse ostalo boste dodajali z enim pritiskom.</div>
+      <div class="sub">Najprej vpišite samo ime otroka. Potem samo pritiskate, kaj želite zabeležiti.</div>
       <label class="label" for="childNameInput">Kako je otroku ime?</label>
       <input id="childNameInput" class="input" maxlength="30" autocomplete="off" placeholder="npr. Nik">
       <button id="startBtn" class="primary" type="button">Začni spremljanje</button>
@@ -109,18 +30,18 @@
         <button id="editChild" class="child" type="button">Otrok</button>
       </div>
 
-      <div class="hello">Spremljanje prehlada, gripe in podobnih obolenj</div>
+      <div class="hello">Prehlad, gripa in podobna sezonska obolenja</div>
       <h1>Kako je zdaj?</h1>
-      <div class="sub">Pritisnite samo tisto, kar želite zabeležiti. Čas se shrani samodejno.</div>
+      <div class="sub">Pritisnite samo tisto, kar želite zabeležiti.</div>
 
       <div class="actions">
         <button class="action temp" id="openTemp" type="button">
           <span class="emoji">🌡️</span>
-          <span><strong>Temperatura</strong><small>Vpiši izmerjeno temperaturo</small></span>
+          <span><strong>Temperatura</strong><small>Vpiši temperaturo, datum in čas</small></span>
         </button>
         <button class="action med" id="openMed" type="button">
           <span class="emoji">💊</span>
-          <span><strong>Dal sem zdravilo</strong><small>Zapiši zdravilo in količino</small></span>
+          <span><strong>Dal sem zdravilo</strong><small>Zapiši samo ime zdravila</small></span>
         </button>
         <button class="action sym" id="openSym" type="button">
           <span class="emoji">🤧</span>
@@ -136,7 +57,7 @@
 
       <button id="doctorBtn" class="doctor" type="button">📋 Pripravi za zdravnika</button>
       <button id="newIllnessBtn" class="newIllness" type="button">Začni novo bolezen</button>
-      <div class="note">Vročinko je dnevnik beleženja. Ne postavlja diagnoz in ne določa ali priporoča odmerkov zdravil.</div>
+      <div class="note">Vročinko samo beleži podatke. Ne postavlja diagnoz in ne priporoča zdravil ali odmerkov.</div>
     </main>
   </div>
 
@@ -144,8 +65,18 @@
     <div class="sheet">
       <div class="grab"></div>
       <div class="sheetHead"><h2 id="tempTitle">Temperatura</h2><button class="close" data-close="tempSheet" type="button">×</button></div>
-      <div class="sub">Vpišite samo številko. Čas bo dodan samodejno.</div>
+      <div class="sub">Vpišite temperaturo. Datum in čas lahko popravite tudi za prejšnji dan.</div>
       <div class="bigTemp"><input id="tempInput" inputmode="decimal" autocomplete="off" placeholder="38,4"><span class="degree">°C</span></div>
+      <div class="dateRow">
+        <div>
+          <label class="label" for="tempDate">Datum meritve</label>
+          <input id="tempDate" class="input" type="date">
+        </div>
+        <div>
+          <label class="label" for="tempTime">Čas meritve</label>
+          <input id="tempTime" class="input" type="time">
+        </div>
+      </div>
       <div id="tempError" class="error"></div>
       <button id="saveTemp" class="save" type="button">Shrani temperaturo</button>
     </div>
@@ -155,11 +86,9 @@
     <div class="sheet">
       <div class="grab"></div>
       <div class="sheetHead"><h2 id="medTitle">Zdravilo</h2><button class="close" data-close="medSheet" type="button">×</button></div>
-      <div class="sub">Zapišite, kaj ste otroku dali. Aplikacija ne določa odmerka.</div>
+      <div class="sub">Zapišite samo ime zdravila, ki ste ga dali.</div>
       <label class="label" for="medName">Ime zdravila</label>
       <input id="medName" class="input" autocomplete="off" placeholder="npr. Calpol">
-      <label class="label" for="medDose">Količina</label>
-      <input id="medDose" class="input" autocomplete="off" placeholder="npr. 7,5 ml">
       <div id="medError" class="error"></div>
       <button id="saveMed" class="save blue" type="button">Shrani zdravilo</button>
     </div>
@@ -203,279 +132,6 @@
     </div>
   </div>
 
-<script>
-(() => {
-  const KEY = 'vrocinko-v1';
-  const $ = id => document.getElementById(id);
-  let state = load();
-  let selectedSymptoms = new Set();
-
-  function load(){
-    try{
-      const raw = localStorage.getItem(KEY);
-      if(raw){
-        const parsed = JSON.parse(raw);
-        return {
-          childName: String(parsed.childName || ''),
-          startedAt: parsed.startedAt || new Date().toISOString(),
-          entries: Array.isArray(parsed.entries) ? parsed.entries : []
-        };
-      }
-    }catch(e){}
-    return {childName:'', startedAt:new Date().toISOString(), entries:[]};
-  }
-
-  function save(){
-    localStorage.setItem(KEY, JSON.stringify(state));
-  }
-
-  function esc(value){
-    return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  function formatDate(iso){
-    return new Intl.DateTimeFormat('sl-SI',{day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(iso));
-  }
-
-  function formatTime(iso){
-    return new Intl.DateTimeFormat('sl-SI',{hour:'2-digit',minute:'2-digit'}).format(new Date(iso));
-  }
-
-  function formatDateTime(iso){
-    return `${formatDate(iso)} ob ${formatTime(iso)}`;
-  }
-
-  function illnessDay(){
-    const start = new Date(state.startedAt);
-    const now = new Date();
-    const a = Date.UTC(start.getFullYear(),start.getMonth(),start.getDate());
-    const b = Date.UTC(now.getFullYear(),now.getMonth(),now.getDate());
-    return Math.max(1, Math.floor((b-a)/86400000)+1);
-  }
-
-  function showApp(){
-    const hasName = state.childName.trim().length > 0;
-    $('setup').classList.toggle('hide', hasName);
-    $('main').classList.toggle('hide', !hasName);
-    if(hasName){
-      $('editChild').textContent = state.childName;
-      $('illnessDay').textContent = `Dan ${illnessDay()}`;
-      renderTimeline();
-    }
-  }
-
-  function openSheet(id){
-    $(id).classList.remove('hide');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeSheet(id){
-    $(id).classList.add('hide');
-    document.body.style.overflow = '';
-  }
-
-  function addEntry(type, title, detail){
-    state.entries.push({
-      id: (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`),
-      type,
-      title,
-      detail,
-      at: new Date().toISOString()
-    });
-    save();
-    renderTimeline();
-  }
-
-  function renderTimeline(){
-    const box = $('timeline');
-    if(!state.entries.length){
-      box.innerHTML = '<div class="empty">Še ni nobenega zapisa.<br><strong>Začni s temperaturo, zdravilom ali simptomi.</strong></div>';
-      return;
-    }
-    const icons = {temp:'🌡️',med:'💊',sym:'🤧'};
-    const sorted = [...state.entries].sort((a,b) => new Date(b.at)-new Date(a.at));
-    box.innerHTML = sorted.map(e => `
-      <div class="event">
-        <div class="eventIcon">${icons[e.type] || '•'}</div>
-        <div>
-          <div class="eventTitle">${esc(e.title)}</div>
-          <div class="eventMeta">${esc(e.detail || '')}${e.detail ? ' · ' : ''}${esc(formatDateTime(e.at))}</div>
-        </div>
-        <button class="delete" type="button" data-delete="${esc(e.id)}" aria-label="Izbriši zapis">×</button>
-      </div>`).join('');
-    box.querySelectorAll('[data-delete]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-delete');
-        if(confirm('Izbrišem ta zapis?')){
-          state.entries = state.entries.filter(e => e.id !== id);
-          save();
-          renderTimeline();
-        }
-      });
-    });
-  }
-
-  function buildReport(){
-    const lines = [];
-    lines.push('VROČINKO – POTEK BOLEZNI');
-    lines.push(`Otrok: ${state.childName}`);
-    lines.push(`Začetek spremljanja: ${formatDate(state.startedAt)}`);
-    lines.push('');
-    if(!state.entries.length){
-      lines.push('Ni zabeleženih podatkov.');
-    }else{
-      const sorted = [...state.entries].sort((a,b) => new Date(a.at)-new Date(b.at));
-      let lastDate = '';
-      sorted.forEach(e => {
-        const d = formatDate(e.at);
-        if(d !== lastDate){
-          if(lastDate) lines.push('');
-          lines.push(d);
-          lastDate = d;
-        }
-        const extra = e.detail ? ` – ${e.detail}` : '';
-        lines.push(`${formatTime(e.at)}  ${e.title}${extra}`);
-      });
-    }
-    lines.push('');
-    lines.push('Zapis je pripravil starš v aplikaciji Vročinko.');
-    return lines.join('\n');
-  }
-
-  $('startBtn').addEventListener('click', () => {
-    const name = $('childNameInput').value.trim();
-    if(!name){$('setupError').textContent='Vpišite ime otroka.';return;}
-    state.childName = name;
-    state.startedAt = new Date().toISOString();
-    save();
-    $('setupError').textContent='';
-    showApp();
-  });
-
-  $('editChild').addEventListener('click', () => {
-    const next = prompt('Ime otroka:', state.childName);
-    if(next !== null && next.trim()){
-      state.childName = next.trim().slice(0,30);
-      save();
-      showApp();
-    }
-  });
-
-  $('openTemp').addEventListener('click', () => {
-    $('tempInput').value='';
-    $('tempError').textContent='';
-    openSheet('tempSheet');
-    setTimeout(() => $('tempInput').focus(), 120);
-  });
-
-  $('saveTemp').addEventListener('click', () => {
-    const raw = $('tempInput').value.trim().replace(',','.');
-    const value = Number(raw);
-    if(!Number.isFinite(value) || value < 34 || value > 43){
-      $('tempError').textContent='Vpišite temperaturo med 34,0 in 43,0 °C.';
-      return;
-    }
-    const shown = value.toFixed(1).replace('.',',');
-    addEntry('temp', `${shown} °C`, 'Izmerjena temperatura');
-    closeSheet('tempSheet');
-  });
-
-  $('openMed').addEventListener('click', () => {
-    $('medName').value='';$('medDose').value='';$('medError').textContent='';
-    openSheet('medSheet');
-    setTimeout(() => $('medName').focus(), 120);
-  });
-
-  $('saveMed').addEventListener('click', () => {
-    const name = $('medName').value.trim();
-    const dose = $('medDose').value.trim();
-    if(!name){$('medError').textContent='Vpišite ime zdravila.';return;}
-    if(!dose){$('medError').textContent='Vpišite količino, ki ste jo dali.';return;}
-    addEntry('med', name, `Količina: ${dose}`);
-    closeSheet('medSheet');
-  });
-
-  $('openSym').addEventListener('click', () => {
-    selectedSymptoms.clear();
-    $('symNote').value='';$('symError').textContent='';
-    document.querySelectorAll('.symptom').forEach(b => b.classList.remove('selected'));
-    openSheet('symSheet');
-  });
-
-  document.querySelectorAll('.symptom').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const s = btn.dataset.symptom;
-      if(selectedSymptoms.has(s)) selectedSymptoms.delete(s); else selectedSymptoms.add(s);
-      btn.classList.toggle('selected', selectedSymptoms.has(s));
-    });
-  });
-
-  $('saveSym').addEventListener('click', () => {
-    const note = $('symNote').value.trim();
-    if(!selectedSymptoms.size && !note){
-      $('symError').textContent='Izberite vsaj en simptom ali napišite kratko opombo.';
-      return;
-    }
-    const selected = [...selectedSymptoms];
-    const title = selected.length ? selected.join(', ') : 'Opomba';
-    addEntry('sym', title, note || 'Trenutno opaženi simptomi');
-    closeSheet('symSheet');
-  });
-
-  $('doctorBtn').addEventListener('click', () => {
-    $('reportText').value = buildReport();
-    $('reportMsg').textContent='';
-    openSheet('reportSheet');
-  });
-
-  $('copyReport').addEventListener('click', async () => {
-    const text = $('reportText').value;
-    try{
-      await navigator.clipboard.writeText(text);
-      $('reportMsg').textContent='Poročilo je kopirano.';
-    }catch(e){
-      $('reportText').focus();
-      $('reportText').select();
-      $('reportMsg').textContent='Besedilo je označeno. Izberite Kopiraj.';
-    }
-  });
-
-  $('shareReport').addEventListener('click', async () => {
-    const text = $('reportText').value;
-    if(navigator.share){
-      try{
-        await navigator.share({title:`Vročinko – ${state.childName}`,text});
-        return;
-      }catch(e){ if(e && e.name === 'AbortError') return; }
-    }
-    try{
-      await navigator.clipboard.writeText(text);
-      $('reportMsg').textContent='Poročilo je kopirano. Zdaj ga lahko prilepite v sporočilo ali e-pošto.';
-    }catch(e){
-      $('reportText').focus();$('reportText').select();
-      $('reportMsg').textContent='Besedilo je označeno za kopiranje.';
-    }
-  });
-
-  $('newIllnessBtn').addEventListener('click', () => {
-    if(!confirm('Začnem novo bolezen? Trenutni zapisi bodo izbrisani.')) return;
-    state.entries = [];
-    state.startedAt = new Date().toISOString();
-    save();
-    showApp();
-  });
-
-  document.querySelectorAll('[data-close]').forEach(btn => {
-    btn.addEventListener('click', () => closeSheet(btn.dataset.close));
-  });
-
-  document.querySelectorAll('.sheetBack').forEach(back => {
-    back.addEventListener('click', e => { if(e.target === back) closeSheet(back.id); });
-  });
-
-  showApp();
-  if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
-})();
-</script>
+  <script src="app.js"></script>
 </body>
 </html>
