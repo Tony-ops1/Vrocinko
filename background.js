@@ -14,6 +14,17 @@
       console.warn('Ozadja ni bilo mogoče naložiti.',error);
     }
   }
+
+  function loadDays(){
+    if(document.querySelector('script[data-vrocinko-days]')) return;
+    const script=document.createElement('script');
+    script.src='days.js';
+    script.dataset.vrocinkoDays='1';
+    document.body.appendChild(script);
+  }
+
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadBackground,{once:true});
   else loadBackground();
+  if(document.readyState==='complete') loadDays();
+  else window.addEventListener('load',loadDays,{once:true});
 })();
