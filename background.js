@@ -52,11 +52,20 @@
     document.body.appendChild(script);
   }
 
+  function loadDeleteData(){
+    if([...document.scripts].some(script=>(script.getAttribute('src')||'').endsWith('delete-data.js'))) return;
+    const script=document.createElement('script');
+    script.src='delete-data.js';
+    script.dataset.vrocinkoDeleteData='1';
+    document.body.appendChild(script);
+  }
+
   function loadExtras(){
     cleanAndLabelUi();
     loadDays();
     loadHistory();
     loadNewIllnessGuard();
+    loadDeleteData();
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{cleanAndLabelUi();loadBackground();},{once:true});
