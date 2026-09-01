@@ -1,4 +1,11 @@
 (() => {
+  function removeLegacyBadges(){
+    document.querySelectorAll('.freeBadge').forEach(el=>el.remove());
+  }
+
+  removeLegacyBadges();
+  new MutationObserver(removeLegacyBadges).observe(document.documentElement,{childList:true,subtree:true});
+
   async function loadBackground(){
     try{
       const files=['assets/bgw1.txt','assets/bgw2.txt','assets/bgw3.txt','assets/bgw4.txt','assets/bgw5.txt','assets/bgw6.txt'];
@@ -23,7 +30,7 @@
     document.body.appendChild(script);
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadBackground,{once:true});
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{removeLegacyBadges();loadBackground();},{once:true});
   else loadBackground();
   if(document.readyState==='complete') loadDays();
   else window.addEventListener('load',loadDays,{once:true});
