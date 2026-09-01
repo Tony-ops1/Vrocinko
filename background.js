@@ -44,10 +44,19 @@
     document.body.appendChild(script);
   }
 
+  function loadNewIllnessGuard(){
+    if([...document.scripts].some(script=>(script.getAttribute('src')||'').endsWith('new-illness-guard.js'))) return;
+    const script=document.createElement('script');
+    script.src='new-illness-guard.js';
+    script.dataset.vrocinkoNewIllnessGuard='1';
+    document.body.appendChild(script);
+  }
+
   function loadExtras(){
     cleanAndLabelUi();
     loadDays();
     loadHistory();
+    loadNewIllnessGuard();
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{cleanAndLabelUi();loadBackground();},{once:true});
