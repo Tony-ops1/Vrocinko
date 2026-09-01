@@ -1,10 +1,16 @@
 (() => {
-  function removeLegacyBadges(){
+  function cleanAndLabelUi(){
     document.querySelectorAll('.freeBadge').forEach(el=>el.remove());
+
+    const accountBtn=document.getElementById('accountBtn');
+    if(accountBtn&&accountBtn.textContent.trim()!=='☁️ Moj račun') accountBtn.textContent='☁️ Moj račun';
+
+    const accountTitle=document.getElementById('accountTitle');
+    if(accountTitle&&accountTitle.textContent.trim()!=='☁️ Moj račun') accountTitle.textContent='☁️ Moj račun';
   }
 
-  removeLegacyBadges();
-  new MutationObserver(removeLegacyBadges).observe(document.documentElement,{childList:true,subtree:true});
+  cleanAndLabelUi();
+  new MutationObserver(cleanAndLabelUi).observe(document.documentElement,{childList:true,subtree:true});
 
   async function loadBackground(){
     try{
@@ -30,8 +36,8 @@
     document.body.appendChild(script);
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{removeLegacyBadges();loadBackground();},{once:true});
-  else loadBackground();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{cleanAndLabelUi();loadBackground();},{once:true});
+  else {cleanAndLabelUi();loadBackground();}
   if(document.readyState==='complete') loadDays();
-  else window.addEventListener('load',loadDays,{once:true});
+  else window.addEventListener('load',()=>{cleanAndLabelUi();loadDays();},{once:true});
 })();
