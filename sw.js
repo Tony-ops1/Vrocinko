@@ -1,25 +1,16 @@
-const CACHE='vrocinko-v19';
-const FILES=['./','./index.html','./style.css','./background.css','./background.js','./app.js','./edit.js','./days.js','./manifest.json','./icon.svg','./assets/bgw1.txt','./assets/bgw2.txt','./assets/bgw3.txt','./assets/bgw4.txt','./assets/bgw5.txt','./assets/bgw6.txt'];
+const CACHE='vrocinko-recovery-v24';
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)));
   self.skipWaiting();
 });
 
 self.addEventListener('activate',event=>{
-  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
-  self.clients.claim();
-});
-
-self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET') return;
-  event.respondWith(
-    fetch(event.request)
-      .then(response=>{
-        const copy=response.clone();
-        caches.open(CACHE).then(cache=>cache.put(event.request,copy));
-        return response;
-      })
-      .catch(()=>caches.match(event.request).then(cached=>cached||caches.match('./index.html')))
+  event.waitUntil(
+    caches.keys()
+      .then(keys=>Promise.all(keys.map(key=>caches.delete(key))))
+      .then(()=>self.clients.claim())
   );
 });
+
+// Recovery service worker intentionally does not intercept requests.
+// The browser loads the current app files directly from the network.
