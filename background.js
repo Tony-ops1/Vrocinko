@@ -36,8 +36,22 @@
     document.body.appendChild(script);
   }
 
+  function loadHistory(){
+    if([...document.scripts].some(script=>(script.getAttribute('src')||'').endsWith('history.js'))) return;
+    const script=document.createElement('script');
+    script.src='history.js';
+    script.dataset.vrocinkoHistory='1';
+    document.body.appendChild(script);
+  }
+
+  function loadExtras(){
+    cleanAndLabelUi();
+    loadDays();
+    loadHistory();
+  }
+
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{cleanAndLabelUi();loadBackground();},{once:true});
   else {cleanAndLabelUi();loadBackground();}
-  if(document.readyState==='complete') loadDays();
-  else window.addEventListener('load',()=>{cleanAndLabelUi();loadDays();},{once:true});
+  if(document.readyState==='complete') loadExtras();
+  else window.addEventListener('load',loadExtras,{once:true});
 })();
