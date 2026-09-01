@@ -10,7 +10,7 @@
     body{margin:0;padding:24px 16px 48px}
     main{max-width:720px;margin:0 auto;background:#fff;border:1px solid #e5e7eb;border-radius:24px;padding:24px;box-shadow:0 8px 28px rgba(15,23,42,.06)}
     h1{font-size:28px;margin:0 0 8px}h2{font-size:19px;margin:26px 0 8px}p,li{line-height:1.6;color:#475467}strong{color:#172033}
-    .date{color:#667085;font-size:14px;margin-bottom:20px}.notice{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:12px 14px;color:#9a3412}
+    .date{color:#667085;font-size:14px;margin-bottom:20px}.info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:12px 14px;color:#1e40af}
     a{color:#2563eb}.back{display:inline-block;margin-top:26px;font-weight:700;text-decoration:none}
   </style>
 </head>
@@ -21,14 +21,21 @@
 
   <p>Vročinko je preprost osebni dnevnik za beleženje poteka bolezni pri otroku. Ta politika pojasnjuje, katere podatke aplikacija uporablja, kje se hranijo in kako jih lahko uporabnik izbriše.</p>
 
+  <h2>Upravljavec</h2>
+  <p>Upravljavec aplikacije je <strong>Vročinko</strong>. Aplikacija je namenjena osebni uporabi staršev in skrbnikov za beleženje podatkov, ki jih uporabnik vnese sam.</p>
+
   <h2>Katere podatke beležimo</h2>
-  <p>Uporabnik lahko vnese ime otroka, temperaturo, simptome, ime zdravila, opombe ter datum in čas posameznega vnosa. Ob prijavi z Googlom se uporabi tudi osnovni identifikator računa, potreben za prijavo in povezavo podatkov z uporabnikom.</p>
+  <p>Uporabnik lahko vnese ime ali kratico otroka, temperaturo, simptome, ime zdravila, opombe ter datum in čas posameznega vnosa. Polno ime otroka ni potrebno; zaradi zmanjševanja količine osebnih podatkov priporočamo uporabo kratice ali vzdevka.</p>
+  <p>Ob prijavi z Googlom se uporabi tudi osnovni identifikator računa, potreben za prijavo in povezavo podatkov z uporabnikom.</p>
 
   <h2>Zakaj podatke uporabljamo</h2>
   <p>Podatki se uporabljajo samo za delovanje Vročinko: prikaz trenutnega poteka bolezni, shranjevanje preteklih bolezni, sinhronizacijo med napravami in pripravo povzetka za zdravnika. Vročinko podatkov ne uporablja za oglaševanje in jih ne prodaja.</p>
 
   <h2>Kje se podatki hranijo</h2>
-  <p>Del podatkov se začasno hrani lokalno v brskalniku oziroma na napravi. Če je uporabnik prijavljen v Moj račun, se podatki sinhronizirajo v Supabase. Google se uporablja za prijavo, GitHub Pages pa za gostovanje spletne aplikacije.</p>
+  <p>Del podatkov se hrani lokalno v brskalniku oziroma na napravi. Če je uporabnik prijavljen v Moj račun, se podatki sinhronizirajo v Supabase. Google se uporablja za prijavo, GitHub Pages pa za gostovanje spletne aplikacije.</p>
+
+  <h2>Podatki o zdravju</h2>
+  <p>Temperatura, simptomi, zdravila in opombe lahko predstavljajo zdravstvene podatke. Uporabnik sam odloča, katere podatke bo vnesel v Vročinko. Priporočamo, da se ne vnaša podatkov, ki niso potrebni za spremljanje poteka bolezni.</p>
 
   <h2>Podatki o otroku</h2>
   <p>Podatke o otroku vnaša starš, skrbnik ali druga oseba, ki je upravičena voditi tak dnevnik. Vročinko ne preverja identitete otroka in ne zahteva rojstnega datuma, naslova ali drugih nepotrebnih osebnih podatkov.</p>
@@ -38,15 +45,16 @@
 
   <h2>Izbris vseh podatkov</h2>
   <p>Ob potrjenem izbrisu se trajno odstranijo vsi otroci, bolezni, temperature, zdravila, simptomi in drugi vnosi tega uporabnika iz Vročinko ter lokalni podatki aplikacije na napravi. Ta postopek ne izbriše uporabnikovega Google računa.</p>
+  <div class="info"><strong>Izbris lahko uporabnik izvede sam neposredno v aplikaciji.</strong> Pred dokončnim izbrisom aplikacija zahteva dodatno potrditev.</div>
 
   <h2>Varnost</h2>
   <p>Dostop do podatkov v oblaku je omejen na prijavljenega uporabnika. Vročinko uporablja pravila dostopa v podatkovni bazi, da uporabnik ne more dostopati do podatkov drugega uporabnika.</p>
 
+  <h2>Storitve tretjih oseb</h2>
+  <p>Za delovanje aplikacije se uporabljajo Google za prijavo, Supabase za shranjevanje in sinhronizacijo podatkov ter GitHub Pages za gostovanje spletne aplikacije. Te storitve lahko obdelujejo tehnične podatke v skladu s svojimi pogoji in politikami zasebnosti.</p>
+
   <h2>Zdravstveno opozorilo</h2>
   <p>Vročinko je namenjen beleženju podatkov. Ne postavlja diagnoz, ne nadomešča zdravnika in ne priporoča zdravil ali odmerkov.</p>
-
-  <h2>Kontakt</h2>
-  <div class="notice"><strong>Pred javno objavo je treba tukaj dodati kontaktni e-poštni naslov upravljavca Vročinko.</strong> Kontaktnega naslova ne bomo ugibali ali objavili brez dovoljenja.</div>
 
   <h2>Spremembe politike</h2>
   <p>Če se način delovanja Vročinko bistveno spremeni, se lahko ta politika posodobi. Datum zadnje spremembe je naveden na vrhu strani.</p>
